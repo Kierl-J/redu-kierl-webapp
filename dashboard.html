@@ -8,153 +8,179 @@
     <style>
         /* General reset */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f7f7f7;
+            background-color: #f4f4f4;
         }
 
-        /* Main Container for layout */
+        /* Main layout container */
         .main-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            justify-content: flex-start;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        /* Logout button at top-right */
+        /* Header with logout button */
+        .header {
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+
         .logout-btn {
-            background-color: #f44336;
+            background-color: #FF4040;
             color: white;
-            padding: 10px 20px;
             border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
             cursor: pointer;
-            border-radius: 5px;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 10;
             font-size: 1rem;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s;
         }
 
         .logout-btn:hover {
-            background-color: #d32f2f;
+            background-color: #E53935;
         }
 
         /* Dashboard container */
         .container {
             width: 100%;
-            max-width: 1100px;
-            margin-top: 60px;
-            padding: 20px;
+            padding: 25px;
             background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Header style */
-        h1 {
-            font-size: 2rem;
-            color: #333;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        /* Coin display */
-        .coin-display {
-            font-size: 1.2rem;
-            text-align: center;
-            margin: 10px 0;
-            color: #555;
-        }
-
-        /* Quest Section */
-        .quest-section {
-            background-color: #f4f8f4;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             margin-bottom: 30px;
         }
 
-        .quest-section p {
-            font-size: 1.2rem;
+        .container h1 {
+            font-size: 2rem;
             color: #333;
-            margin-bottom: 15px;
-            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
         }
 
-        /* Refined button styles */
+        .coin-display {
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #444;
+        }
+
+        .quest-section {
+            background-color: #e9f4f1;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .quest-section h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
         .quest-btn {
             background-color: #4CAF50;
             color: white;
-            padding: 12px 20px;
+            padding: 12px 25px;
+            border-radius: 8px;
             border: none;
             cursor: pointer;
-            border-radius: 5px;
-            text-align: center;
             width: 100%;
-            margin-top: 10px;
-            font-size: 1rem;
-            transition: background-color 0.3s ease;
+            font-size: 1.1rem;
+            margin-top: 15px;
+            transition: background-color 0.3s;
         }
 
         .quest-btn:hover {
-            background-color: #45a049;
+            background-color: #388E3C;
         }
 
-        /* Shop Section */
+        .shop-section {
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .shop-section h2 {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
         #shop {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 20px;
-            margin-top: 30px;
         }
 
         .shop-item {
             background-color: #f9f9f9;
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
             text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
         }
 
         .shop-item:hover {
             transform: translateY(-5px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
         }
 
         .shop-item p {
-            margin: 5px 0;
-            color: #444;
+            color: #555;
+            margin: 8px 0;
         }
 
-        /* Footer */
         footer {
             background-color: #333;
             color: white;
             text-align: center;
-            padding: 20px;
+            padding: 15px 0;
             width: 100%;
-            position: fixed;
-            bottom: 0;
-            left: 0;
             border-top: 1px solid #444;
         }
 
         footer p {
             margin: 0;
         }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 20px;
+            }
+
+            .logout-btn {
+                padding: 8px 15px;
+            }
+
+            .quest-btn, .shop-item button {
+                font-size: 1rem;
+                padding: 10px;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <button class="logout-btn" onclick="logoutUser()">Logout</button>
-
     <div class="main-container">
-        <!-- Dashboard Container -->
+        <!-- Header: Logout button -->
+        <div class="header">
+            <button class="logout-btn" onclick="logoutUser()">Logout</button>
+        </div>
+
+        <!-- Dashboard content -->
         <div class="container">
             <h1>🎯 Quest System</h1>
             <p class="coin-display">Coins: <span id="coinCount">0</span></p>
@@ -165,40 +191,42 @@
 
             <!-- Quest Section -->
             <div class="quest-section">
-                <p>Quest Here</p>
+                <h3>Quest Here</h3>
                 <button id="visitFacebookBtn" class="quest-btn" onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
                 <br><br>
-
                 <a href="gcash.html" class="quest-btn" style="background-color: #3b7a57; text-align: center;">Go to Gcash</a>
             </div>
 
             <!-- Shop Section -->
-            <h2>Exchange your Coin with Money</h2>
-            <div id="shop">
-                <div class="shop-item">
-                    <p><strong>5 USD / </strong></p>
-                    <p>Price: 1,000 Coins</p>
-                    <button class="quest-btn" onclick="buyItem('5 USD', 1000)">BUY</button>
-                </div>
-                <div class="shop-item">
-                    <p><strong>20 USD / </strong></p>
-                    <p>Price: 50,000 Coins</p>
-                    <button class="quest-btn" onclick="buyItem('20 USD', 50000)">Buy</button>
-                </div>
-                <div class="shop-item">
-                    <p><strong>150 USD / </strong></p>
-                    <p>Price: 100,000 Coins</p>
-                    <button class="quest-btn" onclick="buyItem('150 USD', 100000)">Buy</button>
-                </div>
-                <div class="shop-item">
-                    <p><strong>300 USD / </strong></p>
-                    <p>Price: 300,000 Coins</p>
-                    <button class="quest-btn" onclick="buyItem('300 USD', 300000)">Buy</button>
+            <div class="shop-section">
+                <h2>Exchange your Coin with Money</h2>
+                <div id="shop">
+                    <div class="shop-item">
+                        <p><strong>5 USD / </strong></p>
+                        <p>Price: 1,000 Coins</p>
+                        <button class="quest-btn" onclick="buyItem('5 USD', 1000)">BUY</button>
+                    </div>
+                    <div class="shop-item">
+                        <p><strong>20 USD / </strong></p>
+                        <p>Price: 50,000 Coins</p>
+                        <button class="quest-btn" onclick="buyItem('20 USD', 50000)">Buy</button>
+                    </div>
+                    <div class="shop-item">
+                        <p><strong>150 USD / </strong></p>
+                        <p>Price: 100,000 Coins</p>
+                        <button class="quest-btn" onclick="buyItem('150 USD', 100000)">Buy</button>
+                    </div>
+                    <div class="shop-item">
+                        <p><strong>300 USD / </strong></p>
+                        <p>Price: 300,000 Coins</p>
+                        <button class="quest-btn" onclick="buyItem('300 USD', 300000)">Buy</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Footer -->
     <footer>
         <p>© 2025 GTrades Inc. | In partnership with <strong>Banco Santander (Spain)</strong></p>
     </footer>
