@@ -91,7 +91,7 @@
             }
         }
 
-        async function visitFacebook() {
+        window.visitFacebook = async function visitFacebook() {
             const user = auth.currentUser;
             if (!user) {
                 alert("You must be logged in to earn coins.");
