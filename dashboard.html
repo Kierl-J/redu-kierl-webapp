@@ -4,87 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f2f5;
-            display: flex;
-            height: 100vh;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            padding: 30px;
-            text-align: center;
-            width: 100%;
-            max-width: 450px;
-            box-sizing: border-box;
-            position: relative;
-        }
-
-        h1 {
-            color: #4CAF50;
-            margin-bottom: 15px;
-        }
-
-        .coin-display {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 15px 0;
-        }
-
-        .quest-btn {
-            background-color: #4CAF50;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 18px;
-            margin-top: 15px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .quest-btn:hover {
-            background-color: #45a049;
-        }
-
-        .logout-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background-color: #ff4d4d;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .logout-btn:hover {
-            background-color: #e04343;
-        }
-
-        footer {
-            margin-top: 20px;
-            width: 100%;
-            text-align: center;
-            background-color: #4CAF50;
-            color: #fff;
-            padding: 10px 0;
-            font-size: 14px;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
-        }
-
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <button class="logout-btn" onclick="logoutUser()">Logout</button>
@@ -95,8 +15,6 @@
         <div id="welcomeMessage"></div>
         
         <button id="visitFacebookBtn" class="quest-btn" onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
-
-        <!-- Link to Gcash page -->
         <a href="gcash.html" class="quest-btn" style="background-color: #3b7a57;">Go to Gcash</a>
     </div>
 
@@ -104,107 +22,6 @@
         <p>© 2025 GTrades Inc. | In partnership with <strong>BANC Bank</strong></p>
     </footer>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAz_xAszHY5r1OLDSM8PrCMZG_vFlUuJEg",
-            authDomain: "redu-kierl.firebaseapp.com",
-            projectId: "redu-kierl",
-            storageBucket: "redu-kierl.firebasestorage.app",
-            messagingSenderId: "858929548345",
-            appId: "1:858929548345:web:5be516413be06d9a7e11e8",
-            measurementId: "G-YRN2FT696V"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-
-        const coinDisplay = document.getElementById('coinCount');
-        const visitFacebookBtn = document.getElementById('visitFacebookBtn');
-        const welcomeMessage = document.getElementById('welcomeMessage');
-
-        async function loadCoins(userId) {
-            const docRef = doc(db, "users", userId);
-            const docSnap = await getDoc(docRef);
-
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                coinDisplay.textContent = data.coins || 0;
-
-                // Check if the Gcash number is saved
-                if (data.gcashNumber) {
-                    welcomeMessage.textContent = `Welcome, Gcash Number: ${data.gcashNumber}!`;
-                }
-
-                // Disable button if already earned
-                const now = new Date();
-                const lastVisit = data.lastVisit ? new Date(data.lastVisit) : null;
-
-                if (lastVisit && now - lastVisit < 24 * 60 * 60 * 1000) {
-                    visitFacebookBtn.classList.add('disabled');
-                    visitFacebookBtn.disabled = true;
-                }
-            } else {
-                await setDoc(docRef, { coins: 0, lastVisit: null, gcashNumber: "" });
-            }
-        }
-
-        window.visitFacebook = async function visitFacebook() {
-            const user = auth.currentUser;
-            if (!user) {
-                alert("You must be logged in to earn coins.");
-                return;
-            }
-
-            const userId = user.uid;
-            const docRef = doc(db, "users", userId);
-            const docSnap = await getDoc(docRef);
-            const data = docSnap.data();
-
-            const now = new Date();
-            const lastVisit = data.lastVisit ? new Date(data.lastVisit) : null;
-
-            if (lastVisit && now - lastVisit < 24 * 60 * 60 * 1000) {
-                alert("You've already earned a coin today. Try again tomorrow!");
-                visitFacebookBtn.classList.add('disabled');
-                visitFacebookBtn.disabled = true;
-                return;
-            }
-
-            const visited = confirm("Click OK to visit Facebook. You will earn a coin!");
-            if (visited) {
-                window.open('https://facebook.com', '_blank');
-
-                await updateDoc(docRef, {
-                    coins: (data.coins || 0) + 1,
-                    lastVisit: now.toISOString()
-                });
-
-                visitFacebookBtn.classList.add('disabled');
-                visitFacebookBtn.disabled = true;
-
-                loadCoins(userId); // Refresh coin count
-            }
-        }
-
-        window.logoutUser = function logoutUser() {
-            signOut(auth).then(() => {
-                alert("You have been logged out.");
-                window.location.reload();
-            }).catch((error) => {
-                alert("Logout failed, please try again.");
-            });
-        }
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                loadCoins(user.uid);
-            }
-        });
-    </script>
+    <script src="firebase.js"></script>
 </body>
 </html>
