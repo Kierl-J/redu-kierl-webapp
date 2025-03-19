@@ -1,0 +1,33 @@
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Firebase-related files
+.firebaserc
+firebase-debug.log
+firebase.json
+database.rules.json
+storage.rules
+*.firebase
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Vercel build outputs
+.vercel
+.output
+
+# System-specific files
+.DS_Store
+Thumbs.db
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/

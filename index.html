@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firestore Integration Demo</title>
+</head>
+<body>
+    <h1>Firestore Data Entry</h1>
+    <form id="dataForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required>
+        <br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" required>
+        <br>
+        <button type="submit">Add Data</button>
+    </form>
+
+    <h2>Stored Data</h2>
+    <ul id="dataList"></ul>
+
+    <h1>Register / Login</h1>
+    <form id="authForm">
+        <label for="authEmail">Email:</label>
+        <input type="email" id="authEmail" required>
+        <br>
+        <label for="authPassword">Password:</label>
+        <input type="password" id="authPassword" required>
+        <br>
+        <button type="button" onclick="registerUser()">Register</button>
+        <button type="button" onclick="loginUser()">Login</button>
+    </form>
+
+    <p id="statusMessage"></p>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-analytics.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAz_xAszHY5r1OLDSM8PrCMZG_vFlUuJEg",
+            authDomain: "redu-kierl.firebaseapp.com",
+            projectId: "redu-kierl",
+            storageBucket: "redu-kierl.firebasestorage.app",
+            messagingSenderId: "858929548345",
+            appId: "1:858929548345:web:5be516413be06d9a7e11e8",
+            measurementId: "G-YRN2FT696V"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+        const auth = getAuth();
+
+        // Set persistence for session
+        setPersistence(auth, browserSessionPersistence)
+            .then(() => console.log("✅ Persistence set to session mode"))
+            .catch((error) => console.error("❌ Persistence error:", error));
+
+        // Form Submission Logic
+        const dataForm = document.getElementById('dataForm');
+        const dataList = document.getElementById('dataList');
+
+        dataForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+
+            try {
+                await addDoc(collection(db, "users"), { name, email });
+                alert('Data added successfully!');
+                loadData();
+            } catch (error) {
+                console.error("Error adding document: ", error);
+            }
+        });
+
+        // Load Data from Firestore
+        async function loadData() {
+            dataList.innerHTML = '';
+            const querySnapshot = await getDocs(collection(db, "users"));
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const listItem = document.createElement('li');
+                listItem.textContent = `${data.name} - ${data.email}`;
+                dataList.appendChild(listItem);
+            });
+        }
+
+        loadData();
+
+        // Register User
+        window.registerUser = function registerUser() {
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    console.log("✅ Registration successful:", user);
+                    document.getElementById('statusMessage').innerText = `✅ Registered as: ${user.email}`;
+                    window.location.href = "dashboard.html";
+                })
+                .catch((error) => {
+                    console.error("❌ Registration error:", error.message);
+                    document.getElementById('statusMessage').innerText = `❌ Error: ${error.message}`;
+                });
+        }
+
+        // Login User
+        window.loginUser = function loginUser() {
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    console.log("✅ Login successful:", user);
+                    document.getElementById('statusMessage').innerText = `✅ Logged in as: ${user.email}`;
+                    window.location.href = "dashboard.html";
+                })
+                .catch((error) => {
+                    console.error("❌ Login error:", error.message);
+                    document.getElementById('statusMessage').innerText = `❌ Error: ${error.message}`;
+                });
+        }
+    </script>
+</body>
+</html>
