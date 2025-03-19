@@ -3,28 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Register</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Login</h1>
-        <form id="loginForm">
-            <label for="authEmail">Email:</label>
-            <input type="email" id="authEmail" required>
+        <h1>Register</h1>
+        <form id="registerForm">
+            <label for="regEmail">Email:</label>
+            <input type="email" id="regEmail" required>
             <br>
-            <label for="authPassword">Password:</label>
-            <input type="password" id="authPassword" required>
+            <label for="regPassword">Password:</label>
+            <input type="password" id="regPassword" required>
             <br>
-            <button type="button" onclick="loginUser()">Login</button>
+            <button type="button" onclick="registerUser()">Register</button>
         </form>
         <p id="statusMessage"></p>
-        <p>Don't have an account? <a href="register.html">Register here</a></p>
+        <p>Already have an account? <a href="index.html">Login here</a></p>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAz_xAszHY5r1OLDSM8PrCMZG_vFlUuJEg",
@@ -39,14 +39,14 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        window.loginUser = function loginUser() {
-            const email = document.getElementById('authEmail').value;
-            const password = document.getElementById('authPassword').value;
+        window.registerUser = function registerUser() {
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
 
-            signInWithEmailAndPassword(auth, email, password)
+            createUserWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
                     const user = userCredential.user;
-                    document.getElementById('statusMessage').innerText = `✅ Logged in as: ${user.email}`;
+                    document.getElementById('statusMessage').innerText = `✅ Registered as: ${user.email}`;
                     window.location.href = "dashboard.html";
                 })
                 .catch((error) => {

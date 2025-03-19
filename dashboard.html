@@ -4,17 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Welcome to Your Dashboard</h1>
-    <p id="userInfo"></p>
-    <button onclick="logoutUser()">Logout</button>
+    <div class="container">
+        <h1>Dashboard</h1>
+        <p id="userInfo"></p>
+        <button onclick="logoutUser()">Logout</button>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyAz_xAszHY5r1OLDSM8PrCMZG_vFlUuJEg",
             authDomain: "redu-kierl.firebaseapp.com",
@@ -25,7 +27,6 @@
             measurementId: "G-YRN2FT696V"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
