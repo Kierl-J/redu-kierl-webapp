@@ -82,7 +82,7 @@
             border-top-right-radius: 8px;
         }
 
-        .full-name-input {
+        .gcash-number-input {
             width: 100%;
             padding: 8px;
             margin-top: 10px;
@@ -100,10 +100,10 @@
         <p class="coin-display">Coins: <span id="coinCount">0</span></p>
         <button id="visitFacebookBtn" class="quest-btn" onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
 
-        <!-- Full Name Input -->
-        <div id="fullNameSection">
-            <input id="fullNameInput" class="full-name-input" type="text" placeholder="Enter your full name" />
-            <button class="quest-btn" onclick="saveFullName()">Save Full Name</button>
+        <!-- Gcash Number Input -->
+        <div id="gcashNumberSection">
+            <input id="gcashNumberInput" class="gcash-number-input" type="text" placeholder="Enter your Gcash Number" />
+            <button class="quest-btn" onclick="saveGcashNumber()">Save Gcash Number</button>
         </div>
 
         <div id="welcomeMessage"></div>
@@ -134,7 +134,7 @@
 
         const coinDisplay = document.getElementById('coinCount');
         const visitFacebookBtn = document.getElementById('visitFacebookBtn');
-        const fullNameInput = document.getElementById('fullNameInput');
+        const gcashNumberInput = document.getElementById('gcashNumberInput');
         const welcomeMessage = document.getElementById('welcomeMessage');
 
         async function loadCoins(userId) {
@@ -145,9 +145,9 @@
                 const data = docSnap.data();
                 coinDisplay.textContent = data.coins || 0;
 
-                // Check if the full name is saved
-                if (data.fullName) {
-                    welcomeMessage.textContent = `Welcome, ${data.fullName}!`;
+                // Check if the Gcash number is saved
+                if (data.gcashNumber) {
+                    welcomeMessage.textContent = `Welcome, Gcash Number: ${data.gcashNumber}!`;
                 }
 
                 // Disable button if already earned
@@ -159,7 +159,7 @@
                     visitFacebookBtn.disabled = true;
                 }
             } else {
-                await setDoc(docRef, { coins: 0, lastVisit: null, fullName: "" });
+                await setDoc(docRef, { coins: 0, lastVisit: null, gcashNumber: "" });
             }
         }
 
@@ -201,25 +201,25 @@
             }
         }
 
-        window.saveFullName = async function saveFullName() {
+        window.saveGcashNumber = async function saveGcashNumber() {
             const user = auth.currentUser;
             if (!user) {
-                alert("You must be logged in to save your full name.");
+                alert("You must be logged in to save your Gcash Number.");
                 return;
             }
 
             const userId = user.uid;
-            const fullName = fullNameInput.value.trim();
-            if (!fullName) {
-                alert("Please enter your full name.");
+            const gcashNumber = gcashNumberInput.value.trim();
+            if (!gcashNumber) {
+                alert("Please enter your Gcash Number.");
                 return;
             }
 
             const docRef = doc(db, "users", userId);
-            await updateDoc(docRef, { fullName: fullName });
+            await updateDoc(docRef, { gcashNumber: gcashNumber });
 
-            welcomeMessage.textContent = `Welcome, ${fullName}!`;
-            fullNameInput.value = ''; // Clear input after saving
+            welcomeMessage.textContent = `Welcome, Gcash Number: ${gcashNumber}!`;
+            gcashNumberInput.value = ''; // Clear input after saving
         }
 
         window.logoutUser = function logoutUser() {
