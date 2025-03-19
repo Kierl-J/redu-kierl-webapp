@@ -10,6 +10,7 @@
     <div class="container">
         <h1>Dashboard</h1>
         <p id="userInfo"></p>
+        <p><strong>Coin Balance:</strong> <span id="coinBalance">0</span></p>
         <button onclick="logoutUser()">Logout</button>
     </div>
 
@@ -17,32 +18,24 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAz_xAszHY5r1OLDSM8PrCMZG_vFlUuJEg",
-            authDomain: "redu-kierl.firebaseapp.com",
-            projectId: "redu-kierl",
-            storageBucket: "redu-kierl.firebasestorage.app",
-            messagingSenderId: "858929548345",
-            appId: "1:858929548345:web:5be516413be06d9a7e11e8",
-            measurementId: "G-YRN2FT696V"
-        };
-
+        const firebaseConfig = { /* Add your Firebase Config here */ };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Show user info
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
                 document.getElementById('userInfo').innerText = `Logged in as: ${user.email}`;
+                const response = await fetch(`/api/getCoins?email=${user.email}`);
+                const data = await response.json();
+                document.getElementById('coinBalance').innerText = data.coins || 0;
             } else {
-                window.location.href = "index.html"; // Redirect to login if not authenticated
+                window.location.href = "index.html"; // Redirect if not authenticated
             }
         });
 
-        // Logout function
         window.logoutUser = function logoutUser() {
             signOut(auth).then(() => {
-                window.location.href = "index.html"; // Redirect to login after logout
+                window.location.href = "index.html";
             }).catch((error) => {
                 console.error("Logout Error: ", error);
             });
