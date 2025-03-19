@@ -88,3 +88,15 @@ footer {
   bottom: 0;
   width: 100%;
 }
+
+
+/* Disable button style */
+.disabled {
+  background-color: #d3d3d3; /* Light grey background */
+  color: #a9a9a9;  /* Grey text */
+  cursor: not-allowed;  /* Change the cursor to indicate disabled */
+}
+
+button:disabled {
+  pointer-events: none; /* Disable clicking */
+}

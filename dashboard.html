@@ -7,9 +7,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <button class="logout-btn" onclick="logoutUser()">Logout</button>
-    </header>
+    <button class="logout-btn" onclick="logoutUser()">Logout</button>
 
     <div class="container">
         <h1>🎯 Quest System</h1>
@@ -18,46 +16,41 @@
         <div id="welcomeMessage">
             Your Gcash Number: 
         </div>
+        <br>
+        <br>    
+        
+        <p>Quest Here</p>
+        <button id="visitFacebookBtn" class="quest-btn" onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
         <br><br>
 
-        <!-- Quest Section -->
-        <section class="quest-section">
-            <h2>Quest Here</h2>
-            <button id="visitFacebookBtn" class="quest-btn" onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
-        </section>
-
-        <br><br>
-
-        <!-- Gcash Section -->
         <a href="gcash.html" class="quest-btn" style="background-color: #3b7a57;">Go to Gcash</a>
         <br><br>
 
         <!-- Shop Section -->
-        <section class="shop-section">
-            <h2>Exchange your Coin with Money</h2>
-            <div id="shop">
-                <div class="shop-item">
-                    <p><strong>5 USD / </strong></p>
-                    <p>Price: 1,000 Coins</p>
-                    <button class="quest-btn" onclick="buyItem('5 USD', 1000)">BUY</button>
-                </div>
-                <div class="shop-item">
-                    <p><strong>20 USD / </strong></p>
-                    <p>Price: 50,000 Coins</p>
-                    <button class="quest-btn" onclick="buyItem('20 USD', 50000)">BUY</button>
-                </div>
-                <div class="shop-item">
-                    <p><strong>150 USD / </strong></p>
-                    <p>Price: 100,000 Coins</p>
-                    <button class="quest-btn" onclick="buyItem('150 USD', 100000)">BUY</button>
-                </div>
-                <div class="shop-item">
-                    <p><strong>300 USD / </strong></p>
-                    <p>Price: 300,000 Coins</p>
-                    <button class="quest-btn" onclick="buyItem('300 USD', 300000)">BUY</button>
-                </div>
+        <h2>Exchange your Coin with Money</h2>
+        <div id="shop">
+            <div class="shop-item">
+                <p><strong>5 USD / </strong></p>
+                <p>Price: 1,000 Coins</p>
+                <button class="quest-btn" onclick="buyItem('5 USD', 1000)">BUY</button>
             </div>
-        </section>
+            <div class="shop-item">
+                <p><strong>20 USD / </strong></p>
+                <p>Price: 50,000 Coins</p>
+                <button class="quest-btn" onclick="buyItem('20 USD', 50000)">Buy</button>
+            </div>
+            <div class="shop-item">
+                <p><strong>150 USD / </strong></p>
+                <p>Price: 100,000 Coins</p>
+                <button class="quest-btn" onclick="buyItem('150 USD', 100000)">Buy</button>
+            </div>
+            <div class="shop-item">
+                <p><strong>300 USD / </strong></p>
+                <p>Price: 300,000 Coins</p>
+                <button class="quest-btn" onclick="buyItem('300 USD', 300000)">Buy</button>
+            </div>
+            <!-- Add more items here as needed -->
+        </div>
     </div>
 
     <footer>
@@ -136,6 +129,51 @@
             }).catch((error) => {
                 alert("Error logging out: " + error.message);
             });
+        };
+
+        // Visit Facebook and Earn Coins function
+        window.visitFacebook = async function visitFacebook() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("You must be logged in to earn coins.");
+                return;
+            }
+
+            const userId = user.uid;
+            const docRef = doc(db, "users", userId);
+            const docSnap = await getDoc(docRef);
+            const data = docSnap.data();
+
+            const now = new Date();
+            const lastVisit = data.lastVisit ? new Date(data.lastVisit) : null;
+
+            if (lastVisit && now - lastVisit < 24 * 60 * 60 * 1000) {
+                alert("You've already earned a coin today. Try again tomorrow!");
+                const visitFacebookBtn = document.getElementById('visitFacebookBtn');
+                if (visitFacebookBtn) {
+                    visitFacebookBtn.classList.add('disabled');
+                    visitFacebookBtn.disabled = true; // Disable the button
+                }
+                return;
+            }
+
+            const visited = confirm("Click OK to visit Facebook. You will earn a coin!");
+            if (visited) {
+                window.open('https://facebook.com', '_blank');
+
+                await updateDoc(docRef, {
+                    coins: (data.coins || 0) + 1,
+                    lastVisit: now.toISOString()
+                });
+
+                const visitFacebookBtn = document.getElementById('visitFacebookBtn');
+                if (visitFacebookBtn) {
+                    visitFacebookBtn.classList.add('disabled');
+                    visitFacebookBtn.disabled = true; // Disable the button
+                }
+
+                loadCoins(userId); // Refresh coin count
+            }
         };
     </script>
 </body>
