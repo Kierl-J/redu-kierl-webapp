@@ -54,12 +54,11 @@
         <p>© 2025 GTrades Inc. | In partnership with <strong>Banco Santander (Spain)</strong></p>
     </footer>
 
-    <!-- Firebase SDK Imports -->
     <script type="module" src="firebase.js"></script>
 
     <script type="module">
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js"; 
-        import { getFirestore, doc, updateDoc, setDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getFirestore, doc, updateDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
         import { getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const auth = getAuth();
@@ -67,44 +66,43 @@
 
         // The buyItem function
         window.buyItem = async function buyItem(item, price) {
-    const user = auth.currentUser;
-    if (!user) {
-        alert("You must be logged in to make a purchase.");
-        return;
-    }
+            const user = auth.currentUser;
+            if (!user) {
+                alert("You must be logged in to make a purchase.");
+                return;
+            }
 
-    const userEmail = user.email;  // Get the user's email
-    const docRef = doc(db, "users", user.uid);
-    const docSnap = await getDoc(docRef);
+            const userEmail = user.email;  // Get the user's email
+            const docRef = doc(db, "users", user.uid);
+            const docSnap = await getDoc(docRef);
 
-    if (docSnap.exists()) {
-        const data = docSnap.data();
-        const coins = data.coins || 0;
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const coins = data.coins || 0;
 
-        if (coins >= price) {
-            // Subtract coins from the user
-            await updateDoc(docRef, { coins: coins - price });
+                if (coins >= price) {
+                    // Subtract coins from the user
+                    await updateDoc(docRef, { coins: coins - price });
 
-            // Log the purchase with the user's email in the transactions collection
-            await addDoc(collection(db, "transactions"), {
-                userEmail: userEmail,  // Use email instead of userId
-                item: item,
-                price: price,
-                timestamp: new Date()
-            });
+                    // Log the purchase with the user's email in the transactions collection
+                    await addDoc(collection(db, "transactions"), {
+                        userEmail: userEmail,  // Use email instead of userId
+                        item: item,
+                        price: price,
+                        timestamp: new Date()
+                    });
 
-            alert(`${item} purchased successfully!`);
+                    alert(`${item} purchased successfully!`);
 
-            // Reload or update coin display
-            loadCoins(user.uid);
-        } else {
-            alert("You don't have enough coins for this purchase.");
-        }
-    } else {
-        alert("User data not found.");
-    }
-};
-
+                    // Reload or update coin display
+                    loadCoins(user.uid);
+                } else {
+                    alert("You don't have enough coins for this purchase.");
+                }
+            } else {
+                alert("User data not found.");
+            }
+        };
 
         // Function to load coins for the user (reloads after the transaction)
         async function loadCoins(userId) {
@@ -120,15 +118,15 @@
             }
         }
 
-        // Check if user is authenticated
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                loadCoins(user.uid);
-            } else {
-                alert("You are not logged in.");
-                window.location.href = "login.html";  // Redirect to login if user is not authenticated
-            }
-        });
+        // Logout function
+        window.logoutUser = function logoutUser() {
+            signOut(auth).then(() => {
+                alert("You have been logged out.");
+                window.location.href = "index.html"; // Redirect to login page
+            }).catch((error) => {
+                alert("Error logging out: " + error.message);
+            });
+        };
     </script>
 </body>
 </html>
