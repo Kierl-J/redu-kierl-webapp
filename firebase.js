@@ -1,3 +1,4 @@
+// firebase.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
@@ -12,91 +13,133 @@ const firebaseConfig = {
     measurementId: "G-YRN2FT696V"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-async function loadCoins(userId) {
-    const docRef = doc(db, "users", userId);
-    const docSnap = await getDoc(docRef);
+document.addEventListener('DOMContentLoaded', () => {
+    const coinDisplay = document.getElementById('coinCount');
+    const visitFacebookBtn = document.getElementById('visitFacebookBtn');
+    const gcashNumberInput = document.getElementById('gcashNumberInput');
+    const welcomeMessage = document.getElementById('welcomeMessage');
 
-    if (docSnap.exists()) {
-        const data = docSnap.data();
-        document.getElementById('coinCount').textContent = data.coins || 0;
+    async function loadCoins(userId) {
+        const docRef = doc(db, "users", userId);
+        const docSnap = await getDoc(docRef);
 
-        if (data.gcashNumber) {
-            document.getElementById('welcomeMessage').textContent = `Welcome, Gcash Number: ${data.gcashNumber}!`;
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+
+            // Safely check if the elements exist before modifying them
+            if (coinDisplay) {
+                coinDisplay.textContent = data.coins || 0;
+            }
+
+            if (data.gcashNumber && welcomeMessage) {
+                welcomeMessage.textContent = `Welcome, Gcash Number: ${data.gcashNumber}!`;
+            }
+
+            // Disable button if already earned
+            const now = new Date();
+            const lastVisit = data.lastVisit ? new Date(data.lastVisit) : null;
+
+            if (lastVisit && now - lastVisit < 24 * 60 * 60 * 1000) {
+                if (visitFacebookBtn) {
+                    visitFacebookBtn.classList.add('disabled');
+                    visitFacebookBtn.disabled = true;
+                }
+            }
+        } else {
+            await setDoc(docRef, { coins: 0, lastVisit: null, gcashNumber: "" });
         }
+    }
+
+    window.visitFacebook = async function visitFacebook() {
+        const user = auth.currentUser;
+        if (!user) {
+            alert("You must be logged in to earn coins.");
+            return;
+        }
+
+        const userId = user.uid;
+        const docRef = doc(db, "users", userId);
+        const docSnap = await getDoc(docRef);
+        const data = docSnap.data();
 
         const now = new Date();
         const lastVisit = data.lastVisit ? new Date(data.lastVisit) : null;
+
         if (lastVisit && now - lastVisit < 24 * 60 * 60 * 1000) {
-            document.getElementById('visitFacebookBtn').disabled = true;
+            alert("You've already earned a coin today. Try again tomorrow!");
+            if (visitFacebookBtn) {
+                visitFacebookBtn.classList.add('disabled');
+                visitFacebookBtn.disabled = true;
+            }
+            return;
         }
-    } else {
-        await setDoc(docRef, { coins: 0, lastVisit: null, gcashNumber: "" });
-    }
-}
 
-window.visitFacebook = async function visitFacebook() {
-    const user = auth.currentUser;
-    if (!user) {
-        alert("You must be logged in to earn coins.");
-        return;
-    }
+        const visited = confirm("Click OK to visit Facebook. You will earn a coin!");
+        if (visited) {
+            window.open('https://facebook.com', '_blank');
 
-    const userId = user.uid;
-    const docRef = doc(db, "users", userId);
-    const docSnap = await getDoc(docRef);
-    const data = docSnap.data();
+            await updateDoc(docRef, {
+                coins: (data.coins || 0) + 1,
+                lastVisit: now.toISOString()
+            });
 
-    const now = new Date();
-    const lastVisit = data.lastVisit ? new Date(data.lastVisit) : null;
-    if (lastVisit && now - lastVisit < 24 * 60 * 60 * 1000) {
-        alert("You've already earned a coin today. Try again tomorrow!");
-        return;
+            if (visitFacebookBtn) {
+                visitFacebookBtn.classList.add('disabled');
+                visitFacebookBtn.disabled = true;
+            }
+
+            loadCoins(userId); // Refresh coin count
+        }
     }
 
-    const visited = confirm("Click OK to visit Facebook. You will earn a coin!");
-    if (visited) {
-        window.open('https://facebook.com', '_blank');
-        await updateDoc(docRef, { coins: (data.coins || 0) + 1, lastVisit: now.toISOString() });
-        loadCoins(userId);
-    }
-}
+    window.saveGcashNumber = async function saveGcashNumber() {
+        const user = auth.currentUser;
+        if (!user) {
+            alert("You must be logged in to save your Gcash Number.");
+            return;
+        }
 
-window.logoutUser = function logoutUser() {
-    signOut(auth).then(() => {
-        alert("You have been logged out.");
-        window.location.reload();
-    }).catch((error) => {
-        alert("Logout failed, please try again.");
+        const userId = user.uid;
+        const gcashNumber = gcashNumberInput.value.trim();
+        if (!gcashNumber) {
+            alert("Please enter your Gcash Number.");
+            return;
+        }
+
+        const docRef = doc(db, "users", userId);
+        await updateDoc(docRef, { gcashNumber: gcashNumber });
+
+        if (welcomeMessage) {
+            welcomeMessage.textContent = `Welcome, Gcash Number: ${gcashNumber}!`;
+        }
+        gcashNumberInput.value = ''; // Clear input after saving
+
+        // Display success pop-up and redirect back to dashboard
+        alert("Gcash Number saved successfully!");
+        window.location.href = "dashboard.html"; // Redirect to dashboard
+    }
+
+    window.logoutUser = function logoutUser() {
+        signOut(auth).then(() => {
+            alert("You have been logged out.");
+            window.location.href = "login.html"; // Redirect to login page
+        }).catch((error) => {
+            alert("Error logging out: " + error.message);
+        });
+    };
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            loadCoins(user.uid);
+        } else {
+            if (coinDisplay) {
+                coinDisplay.textContent = "0";
+            }
+        }
     });
-}
-
-window.saveGcashNumber = async function saveGcashNumber() {
-    const user = auth.currentUser;
-    if (!user) {
-        alert("You must be logged in to save your Gcash Number.");
-        return;
-    }
-
-    const userId = user.uid;
-    const gcashNumber = document.getElementById('gcashNumberInput').value.trim();
-    if (!gcashNumber) {
-        alert("Please enter your Gcash Number.");
-        return;
-    }
-
-    const docRef = doc(db, "users", userId);
-    await updateDoc(docRef, { gcashNumber: gcashNumber });
-
-    alert("Gcash Number saved successfully!");
-    window.location.href = "dashboard.html";
-}
-
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        loadCoins(user.uid);
-    }
 });
