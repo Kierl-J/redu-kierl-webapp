@@ -49,14 +49,30 @@
         button:hover {
             background-color: #45a049;
         }
+
+        footer {
+            margin-top: 20px;
+            width: 100%;
+            text-align: center;
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px 0;
+            font-size: 14px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🎯 Quest System</h1>
         <p class="coin-display">Coins: <span id="coinCount">0</span></p>
-        <button onclick="visitFacebook()">Visit dmdp-css.online and Earn Coins</button>
+        <button onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
     </div>
+
+    <footer>
+        <p>© 2025 GTrades Inc. | In partnership with <strong>Banco Santander</strong></p>
+    </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
@@ -132,19 +148,5 @@
             }
         });
     </script>
-
-    <footer style="
-    margin-top: 20px;
-    width: 100%;
-    text-align: center;
-    background-color: #4CAF50;
-    color: #fff;
-    padding: 10px 0;
-    font-size: 14px;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-">
-    <p>© 2025 GTrades Inc. | In partnership with <strong>Banco Santander</strong></p>
-</footer>
 </body>
 </html>
