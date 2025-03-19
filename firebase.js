@@ -1,7 +1,7 @@
 // firebase.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAz_xAszHY5r1OLDSM8PrCMZG_vFlUuJEg",
@@ -13,7 +13,6 @@ const firebaseConfig = {
     measurementId: "G-YRN2FT696V"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
@@ -21,7 +20,6 @@ const auth = getAuth(app);
 document.addEventListener('DOMContentLoaded', () => {
     const coinDisplay = document.getElementById('coinCount');
     const visitFacebookBtn = document.getElementById('visitFacebookBtn');
-    const gcashNumberInput = document.getElementById('gcashNumberInput');
     const welcomeMessage = document.getElementById('welcomeMessage');
 
     async function loadCoins(userId) {
@@ -31,27 +29,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (docSnap.exists()) {
             const data = docSnap.data();
 
-            // Safely check if the elements exist before modifying them
+            // Update coin display
             if (coinDisplay) {
                 coinDisplay.textContent = data.coins || 0;
             }
 
             if (data.gcashNumber && welcomeMessage) {
-                welcomeMessage.textContent = `Your Gcash Number: ${data.gcashNumber}`;
+                welcomeMessage.textContent = `Gcash Number: ${data.gcashNumber}`;
             }
-
-            // Disable button if already earned
-            const now = new Date();
-            const lastVisit = data.lastVisit ? new Date(data.lastVisit) : null;
-
-            if (lastVisit && now - lastVisit < 24 * 60 * 60 * 1000) {
-                if (visitFacebookBtn) {
-                    visitFacebookBtn.classList.add('disabled');
-                    visitFacebookBtn.disabled = true;
-                }
-            }
-        } else {
-            await setDoc(docRef, { coins: 0, lastVisit: null, gcashNumber: "" });
         }
     }
 
@@ -97,37 +82,38 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    window.saveGcashNumber = async function saveGcashNumber() {
+    window.buyItem = async function buyItem(item, price) {
         const user = auth.currentUser;
         if (!user) {
-            alert("You must be logged in to save your Gcash Number.");
+            alert("You must be logged in to purchase items.");
             return;
         }
 
         const userId = user.uid;
-        const gcashNumber = gcashNumberInput.value.trim();
-        if (!gcashNumber) {
-            alert("Please enter your Gcash Number.");
+        const docRef = doc(db, "users", userId);
+        const docSnap = await getDoc(docRef);
+        const data = docSnap.data();
+
+        if (data.coins < price) {
+            alert("You don't have enough coins to buy this item.");
             return;
         }
 
-        const docRef = doc(db, "users", userId);
-        await updateDoc(docRef, { gcashNumber: gcashNumber });
+        // Deduct coins and update the purchase
+        const updatedCoins = data.coins - price;
+        await updateDoc(docRef, {
+            coins: updatedCoins
+        });
 
-        if (welcomeMessage) {
-            welcomeMessage.textContent = `Welcome, Gcash Number: ${gcashNumber}!`;
-        }
-        gcashNumberInput.value = ''; // Clear input after saving
-
-        // Display success pop-up and redirect back to dashboard
-        alert("Gcash Number saved successfully!");
-        window.location.href = "dashboard.html"; // Redirect to dashboard
+        // Display success message
+        alert(`Successfully purchased a ${item}!`);
+        loadCoins(userId); // Refresh coin count after purchase
     }
 
     window.logoutUser = function logoutUser() {
         signOut(auth).then(() => {
             alert("You have been logged out.");
-            window.location.href = "index.html"; // Redirect to login page
+            window.location.href = "login.html"; // Redirect to login page
         }).catch((error) => {
             alert("Error logging out: " + error.message);
         });
