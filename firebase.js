@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const lastVisit = data.lastVisit ? new Date(data.lastVisit) : null;
 
         if (lastVisit && now - lastVisit < 24 * 60 * 60 * 1000) {
-            alert("You've already earned a coin today. Try again tomorrow!");
+            alert("You've already earned a facebook quest. Try again tomorrow!");
             if (visitFacebookBtn) {
                 visitFacebookBtn.classList.add('disabled');
                 visitFacebookBtn.disabled = true;
