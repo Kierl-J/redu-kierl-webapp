@@ -89,12 +89,42 @@
             border-top-right-radius: 8px;
         }
 
-        .gcash-number-container {
-            text-align: left; /* Align inputs to the left */
-            width: 100%;
-            margin-top: 20px;
+        /* Tabs Styles */
+        .tabs {
             display: flex;
-            justify-content: flex-end; /* Align content to the right */
+            justify-content: space-evenly;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background-color: #ddd;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+        .tab-btn.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            margin-top: 20px;
+        }
+
+        .gcash-number-container {
+            text-align: left;
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
             gap: 10px;
         }
 
@@ -122,10 +152,23 @@
         <div id="welcomeMessage"></div>
         <button id="visitFacebookBtn" class="quest-btn" onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
 
-        <!-- Gcash Number Input -->
-        <div class="gcash-number-container">
-            <input id="gcashNumberInput" class="gcash-number-input" type="text" placeholder="Enter your Gcash Number" />
-            <button class="quest-btn" onclick="saveGcashNumber()">Save Gcash Number</button>
+        <!-- Tabs Section -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('questTab')">Quest</button>
+            <button class="tab-btn" onclick="showTab('gcashTab')">Gcash</button>
+        </div>
+
+        <!-- Tab Contents -->
+        <div class="tab-content active" id="questTab">
+            <p>Welcome to the quest tab!</p>
+            <button id="visitFacebookBtn" class="quest-btn" onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
+        </div>
+
+        <div class="tab-content" id="gcashTab">
+            <div class="gcash-number-container">
+                <input id="gcashNumberInput" class="gcash-number-input" type="text" placeholder="Enter your Gcash Number" />
+                <button class="quest-btn" onclick="saveGcashNumber()">Save Gcash Number</button>
+            </div>
         </div>
     </div>
 
@@ -250,6 +293,19 @@
                 alert("Error logging out: " + error.message);
             });
         };
+
+        function showTab(tabId) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-btn');
+
+            // Hide all tab contents
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(button => button.classList.remove('active'));
+
+            // Show the clicked tab and activate the button
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
