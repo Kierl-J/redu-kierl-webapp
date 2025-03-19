@@ -15,6 +15,10 @@
             Your Gcash Number: 
         </div>
         <br>
+        <div id="fullName">
+            <!-- User Full Name will be displayed here -->
+        </div>
+        <br>
         <hr>
         <p>Quest Here</p>
         <button id="visitFacebookBtn" class="quest-btn" onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
@@ -67,6 +71,26 @@
 
         const auth = getAuth();
         const db = getFirestore();
+
+        // Function to load user data and display coins and full name
+        async function loadUserData(userId) {
+            const docRef = doc(db, "users", userId);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const coinDisplay = document.getElementById('coinCount');
+                const fullNameDisplay = document.getElementById('fullName');
+                
+                if (coinDisplay) {
+                    coinDisplay.textContent = data.coins || 0;
+                }
+                
+                if (fullNameDisplay) {
+                    fullNameDisplay.textContent = `Welcome, ${data.fullName || "User"}`;  // Display user's full name
+                }
+            }
+        }
 
         // The buyItem function
         window.buyItem = async function buyItem(item, price) {
@@ -176,6 +200,17 @@
                 loadCoins(userId); // Refresh coin count
             }
         };
+
+        // On page load, load user data
+        window.onload = function() {
+            const user = auth.currentUser;
+            if (user) {
+                loadUserData(user.uid);
+            } else {
+                window.location.href = "index.html"; // Redirect to login page if not logged in
+            }
+        };
+
     </script>
 </body>
 </html>

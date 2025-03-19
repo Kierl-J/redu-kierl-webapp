@@ -10,6 +10,9 @@
     <div class="container">
         <h1>Register</h1>
         <form id="registerForm">
+            <label for="regFullName">Full Name:</label>
+            <input type="text" id="regFullName" required>
+            <br>
             <label for="regEmail">Email:</label>
             <input type="email" id="regEmail" required>
             <br>
@@ -24,7 +27,6 @@
             <p>© 2025 GTrades Inc. | In partnership with <strong>Banco Santander (Spain)</strong></p>
         </footer>
     </div>
-
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
@@ -46,6 +48,7 @@
         const db = getFirestore(app);
 
         window.registerUser = function registerUser() {
+            const fullName = document.getElementById('regFullName').value;
             const email = document.getElementById('regEmail').value;
             const password = document.getElementById('regPassword').value;
 
@@ -53,6 +56,7 @@
                 .then(async (userCredential) => {
                     const user = userCredential.user;
                     await setDoc(doc(db, "users", user.uid), {
+                        fullName: fullName,  // Store the full name
                         email: user.email,
                         coins: 0, // Starting coin balance
                         gcashNumber: "" // Default empty Gcash number
