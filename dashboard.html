@@ -18,9 +18,8 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
-        // Firebase Configuration (Your config added here)
         const firebaseConfig = {
-            apiKey: "AIzaSyAz_xAszHY5r1OLDSM8PrCMZG_vFlUuJEg",
+            apiKey: "AIzaSyAz_xAszHY5",
             authDomain: "redu-kierl.firebaseapp.com",
             projectId: "redu-kierl",
             storageBucket: "redu-kierl.firebasestorage.app",
@@ -32,17 +31,30 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
+        // Handle Authentication State
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 document.getElementById('userInfo').innerText = `Logged in as: ${user.email}`;
-                const response = await fetch(`/api/getCoins?email=${user.email}`);
-                const data = await response.json();
-                document.getElementById('coinBalance').innerText = data.coins || 0;
+
+                try {
+                    const response = await fetch(`/api/getCoins?email=${encodeURIComponent(user.email)}`);
+                    const data = await response.json();
+
+                    if (data.coins !== undefined) {
+                        document.getElementById('coinBalance').innerText = data.coins;
+                    } else {
+                        document.getElementById('coinBalance').innerText = "0"; // Default if no coin data
+                    }
+                } catch (error) {
+                    console.error("Failed to load coin data:", error);
+                    document.getElementById('coinBalance').innerText = "Error loading coins";
+                }
             } else {
                 window.location.href = "index.html"; // Redirect if not authenticated
             }
         });
 
+        // Logout Function
         window.logoutUser = function logoutUser() {
             signOut(auth).then(() => {
                 window.location.href = "index.html";
