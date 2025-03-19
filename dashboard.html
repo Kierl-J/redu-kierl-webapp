@@ -26,6 +26,7 @@
             width: 100%;
             max-width: 450px;
             box-sizing: border-box;
+            position: relative;
         }
 
         h1 {
@@ -88,18 +89,27 @@
             border-top-right-radius: 8px;
         }
 
-        .gcash-number-input {
+        .gcash-number-container {
+            text-align: left; /* Align inputs to the left */
             width: 100%;
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end; /* Align content to the right */
+            gap: 10px;
+        }
+
+        .gcash-number-input {
+            width: 200px;
             padding: 10px;
-            margin-top: 15px;
             font-size: 16px;
             border-radius: 6px;
             border: 1px solid #ccc;
             box-sizing: border-box;
         }
 
-        #gcashNumberSection button {
-            margin-top: 10px;
+        .gcash-number-container button {
+            margin-top: 0;
+            height: 100%;
         }
     </style>
 </head>
@@ -113,7 +123,7 @@
         <button id="visitFacebookBtn" class="quest-btn" onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
 
         <!-- Gcash Number Input -->
-        <div id="gcashNumberSection">
+        <div class="gcash-number-container">
             <input id="gcashNumberInput" class="gcash-number-input" type="text" placeholder="Enter your Gcash Number" />
             <button class="quest-btn" onclick="saveGcashNumber()">Save Gcash Number</button>
         </div>
