@@ -1,26 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            height: 100vh;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            color: #4CAF50;
+        }
+
+        .coin-display {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to Your Dashboard</h1>
-    <p>Coins: <span id="coinCount">0</span></p>
-
-    <button onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
+    <div class="container">
+        <h1>🎯 Quest System</h1>
+        <p class="coin-display">Coins: <span id="coinCount">0</span></p>
+        <button onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-        const firebaseConfig = { /* Your Firebase Config Here */ };
+        const firebaseConfig = {
+            apiKey: "AIzaSyAz_xAszHY5r1OLDSM8PrCMZG_vFlUuJEg",
+            authDomain: "redu-kierl.firebaseapp.com",
+            projectId: "redu-kierl",
+            storageBucket: "redu-kierl.firebasestorage.app",
+            messagingSenderId: "858929548345",
+            appId: "1:858929548345:web:5be516413be06d9a7e11e8",
+            measurementId: "G-YRN2FT696V"
+        };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
-        const userId = "user123"; // Example user ID; replace with dynamic data as needed
         const coinDisplay = document.getElementById('coinCount');
 
-        async function loadCoins() {
+        async function loadCoins(userId) {
             const docRef = doc(db, "users", userId);
             const docSnap = await getDoc(docRef);
 
@@ -33,6 +92,13 @@
         }
 
         async function visitFacebook() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("You must be logged in to earn coins.");
+                return;
+            }
+
+            const userId = user.uid;
             const docRef = doc(db, "users", userId);
             const docSnap = await getDoc(docRef);
             const data = docSnap.data();
@@ -40,27 +106,31 @@
             const now = new Date();
             const lastVisit = data.lastVisit ? new Date(data.lastVisit) : null;
 
-            // Cooldown logic: Check if last visit was within 24 hours
             if (lastVisit && now - lastVisit < 24 * 60 * 60 * 1000) {
                 alert("You've already earned a coin today. Try again tomorrow!");
                 return;
             }
 
-            // Reward user with a coin
             const visited = confirm("Click OK to visit Facebook. You will earn a coin!");
             if (visited) {
                 window.open('https://facebook.com', '_blank');
 
                 await updateDoc(docRef, {
                     coins: (data.coins || 0) + 1,
-                    lastVisit: now.toISOString() // Save timestamp for cooldown tracking
+                    lastVisit: now.toISOString()
                 });
 
-                loadCoins(); // Refresh the coin count
+                loadCoins(userId); // Refresh coin count
             }
         }
 
-        loadCoins(); // Load coins on page load
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loadCoins(user.uid);
+            } else {
+                coinDisplay.textContent = "0";
+            }
+        });
     </script>
 </body>
 </html>
