@@ -13,6 +13,7 @@
             align-items: center;
             justify-content: center;
             flex-direction: column;
+            position: relative;
         }
 
         .container {
@@ -50,6 +51,20 @@
             background-color: #45a049;
         }
 
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #ff4d4d;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background-color: #e04343;
+        }
+
         footer {
             margin-top: 20px;
             width: 100%;
@@ -64,6 +79,8 @@
     </style>
 </head>
 <body>
+    <button class="logout-btn" onclick="logoutUser()">Logout</button>
+
     <div class="container">
         <h1>🎯 Quest System</h1>
         <p class="coin-display">Coins: <span id="coinCount">0</span></p>
@@ -71,12 +88,12 @@
     </div>
 
     <footer>
-        <p>© 2025 GTrades Inc. | In partnership with <strong>Banco Santander</strong></p>
+        <p>© 2025 GTrades Inc. | In partnership with <strong>BANC Bank</strong></p>
     </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -139,6 +156,15 @@
                 loadCoins(userId); // Refresh coin count
             }
         }
+
+        window.logoutUser = function logoutUser() {
+            signOut(auth).then(() => {
+                alert("You have been logged out.");
+                window.location.href = "login.html"; // Redirect to login page
+            }).catch((error) => {
+                alert("Error logging out: " + error.message);
+            });
+        };
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
