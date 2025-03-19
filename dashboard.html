@@ -67,43 +67,44 @@
 
         // The buyItem function
         window.buyItem = async function buyItem(item, price) {
-            const user = auth.currentUser;
-            if (!user) {
-                alert("You must be logged in to make a purchase.");
-                return;
-            }
+    const user = auth.currentUser;
+    if (!user) {
+        alert("You must be logged in to make a purchase.");
+        return;
+    }
 
-            const userId = user.uid;
-            const docRef = doc(db, "users", userId);
-            const docSnap = await getDoc(docRef);
+    const userEmail = user.email;  // Get the user's email
+    const docRef = doc(db, "users", user.uid);
+    const docSnap = await getDoc(docRef);
 
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                const coins = data.coins || 0;
+    if (docSnap.exists()) {
+        const data = docSnap.data();
+        const coins = data.coins || 0;
 
-                if (coins >= price) {
-                    // Subtract coins from the user
-                    await updateDoc(docRef, { coins: coins - price });
+        if (coins >= price) {
+            // Subtract coins from the user
+            await updateDoc(docRef, { coins: coins - price });
 
-                    // Log the purchase in a separate collection for transactions
-                    await addDoc(collection(db, "transactions"), {
-                        userId: userId,
-                        item: item,
-                        price: price,
-                        timestamp: new Date()
-                    });
+            // Log the purchase with the user's email in the transactions collection
+            await addDoc(collection(db, "transactions"), {
+                userEmail: userEmail,  // Use email instead of userId
+                item: item,
+                price: price,
+                timestamp: new Date()
+            });
 
-                    alert(`${item} purchased successfully!`);
+            alert(`${item} purchased successfully!`);
 
-                    // Reload or update coin display
-                    loadCoins(userId);
-                } else {
-                    alert("You don't have enough coins for this purchase.");
-                }
-            } else {
-                alert("User data not found.");
-            }
-        };
+            // Reload or update coin display
+            loadCoins(user.uid);
+        } else {
+            alert("You don't have enough coins for this purchase.");
+        }
+    } else {
+        alert("User data not found.");
+    }
+};
+
 
         // Function to load coins for the user (reloads after the transaction)
         async function loadCoins(userId) {
