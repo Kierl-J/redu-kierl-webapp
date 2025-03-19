@@ -16,7 +16,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getAuth, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } 
+            from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAz_xAszHY5",
@@ -31,37 +32,42 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Handle Authentication State
+        // Enable session persistence
+        setPersistence(auth, browserLocalPersistence).catch(console.error);
+
+        // Authentication and Coin Balance Display
         onAuthStateChanged(auth, async (user) => {
+            console.log("Auth State Changed:", user);  // Debugging log
+
             if (user) {
                 document.getElementById('userInfo').innerText = `Logged in as: ${user.email}`;
 
                 try {
                     const response = await fetch(`/api/getCoins?email=${encodeURIComponent(user.email)}`);
                     const data = await response.json();
+                    console.log("Fetched Data:", data);  // Debugging log
 
-                    if (data.coins !== undefined) {
-                        document.getElementById('coinBalance').innerText = data.coins;
-                    } else {
-                        document.getElementById('coinBalance').innerText = "0"; // Default if no coin data
-                    }
+                    document.getElementById('coinBalance').innerText = data.coins || 0;
                 } catch (error) {
                     console.error("Failed to load coin data:", error);
                     document.getElementById('coinBalance').innerText = "Error loading coins";
                 }
             } else {
-                window.location.href = "index.html"; // Redirect if not authenticated
+                console.log("User not authenticated.");  // Debugging log
+                window.location.href = "index.html";
             }
         });
 
         // Logout Function
         window.logoutUser = function logoutUser() {
-            signOut(auth).then(() => {
-                window.location.href = "index.html";
-            }).catch((error) => {
-                console.error("Logout Error: ", error);
-            });
-        }
+            signOut(auth)
+                .then(() => {
+                    window.location.href = "index.html";
+                })
+                .catch((error) => {
+                    console.error("Logout Error: ", error);
+                });
+        };
     </script>
 </body>
 </html>

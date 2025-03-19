@@ -11,7 +11,6 @@ const firebaseConfig = {
     measurementId: "G-YRN2FT696V"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
@@ -19,21 +18,17 @@ export default async function handler(req, res) {
     const { email } = req.query;
 
     if (!email) {
-        return res.status(400).json({ error: "Email is required" });
+        res.status(400).json({ error: "Email is required." });
+        return;
     }
 
-    try {
-        const userRef = doc(db, "users", email);
-        const userDoc = await getDoc(userRef);
+    const userRef = doc(db, "users", email); // Updated to use email as doc ID
+    const userSnap = await getDoc(userRef);
 
-        if (userDoc.exists()) {
-            const userData = userDoc.data();
-            res.status(200).json({ coins: userData.coins || 0 });
-        } else {
-            res.status(404).json({ error: "User not found" });
-        }
-    } catch (error) {
-        console.error("Error fetching coins:", error);
-        res.status(500).json({ error: "Internal server error" });
+    if (userSnap.exists()) {
+        const { coins } = userSnap.data();
+        res.status(200).json({ coins });
+    } else {
+        res.status(404).json({ coins: 0 }); // Default value if user data not found
     }
 }
