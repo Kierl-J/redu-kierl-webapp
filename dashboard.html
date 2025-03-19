@@ -22,6 +22,7 @@
         <hr>
         <p>Quest Here</p>
         <button id="visitFacebookBtn" class="quest-btn" onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
+        <button id="visitYouTubeBtn" class="quest-btn" onclick="visitYouTube()">Visit YouTube and Earn Coins</button> <!-- New quest button -->
         <hr>
         
         <br>
@@ -194,6 +195,51 @@
                 if (visitFacebookBtn) {
                     visitFacebookBtn.classList.add('disabled');
                     visitFacebookBtn.disabled = true; // Disable the button
+                }
+
+                loadCoins(userId); // Refresh coin count
+            }
+        };
+
+        // Visit YouTube and Earn Coins function (New quest)
+        window.visitYouTube = async function visitYouTube() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("You must be logged in to earn coins.");
+                return;
+            }
+
+            const userId = user.uid;
+            const docRef = doc(db, "users", userId);
+            const docSnap = await getDoc(docRef);
+            const data = docSnap.data();
+
+            const now = new Date();
+            const lastVisit = data.lastYouTubeVisit ? new Date(data.lastYouTubeVisit) : null;
+
+            if (lastVisit && now - lastVisit < 24 * 60 * 60 * 1000) {
+                alert("You've already earned a coin today from YouTube. Try again tomorrow!");
+                const visitYouTubeBtn = document.getElementById('visitYouTubeBtn');
+                if (visitYouTubeBtn) {
+                    visitYouTubeBtn.classList.add('disabled');
+                    visitYouTubeBtn.disabled = true; // Disable the button
+                }
+                return;
+            }
+
+            const visited = confirm("Click OK to visit YouTube. You will earn a coin!");
+            if (visited) {
+                window.open('https://youtube.com', '_blank');
+
+                await updateDoc(docRef, {
+                    coins: (data.coins || 0) + 1,
+                    lastYouTubeVisit: now.toISOString()
+                });
+
+                const visitYouTubeBtn = document.getElementById('visitYouTubeBtn');
+                if (visitYouTubeBtn) {
+                    visitYouTubeBtn.classList.add('disabled');
+                    visitYouTubeBtn.disabled = true; // Disable the button
                 }
 
                 loadCoins(userId); // Refresh coin count

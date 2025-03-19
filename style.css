@@ -102,6 +102,5 @@ button:disabled {
 }
 
 #fullName {
-  color: rgb(207, 81, 102);
-  font-weight: 700;
+  font-weight: bolder;
 }
