@@ -34,6 +34,12 @@
             top: 20px;
             right: 20px;
             z-index: 10;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #d32f2f;
         }
 
         /* Dashboard container */
@@ -79,6 +85,7 @@
             font-weight: bold;
         }
 
+        /* Refined button styles */
         .quest-btn {
             background-color: #4CAF50;
             color: white;
@@ -89,6 +96,8 @@
             text-align: center;
             width: 100%;
             margin-top: 10px;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
         }
 
         .quest-btn:hover {
@@ -109,11 +118,12 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             text-align: center;
-            transition: transform 0.3s;
+            transition: transform 0.3s, box-shadow 0.3s;
         }
 
         .shop-item:hover {
             transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         .shop-item p {
@@ -159,7 +169,7 @@
                 <button id="visitFacebookBtn" class="quest-btn" onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
                 <br><br>
 
-                <a href="gcash.html" class="quest-btn" style="background-color: #3b7a57;">Go to Gcash</a>
+                <a href="gcash.html" class="quest-btn" style="background-color: #3b7a57; text-align: center;">Go to Gcash</a>
             </div>
 
             <!-- Shop Section -->
