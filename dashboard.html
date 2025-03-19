@@ -93,7 +93,7 @@
     </div>
 
     <footer>
-        <p>© 2025 GTrades Inc. | In partnership with <strong>BANC Bank</strong></p>
+        <p>© 2025 GTrades Inc. | In partnership with <strong>Banco Santander (Spain)</strong></p>
     </footer>
 
     <script type="module">
@@ -180,7 +180,7 @@
         window.logoutUser = function logoutUser() {
             signOut(auth).then(() => {
                 alert("You have been logged out.");
-                window.location.href = "login.html"; // Redirect to login page
+                window.location.href = "index.html"; // Redirect to login page
             }).catch((error) => {
                 alert("Error logging out: " + error.message);
             });
