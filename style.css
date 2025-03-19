@@ -100,3 +100,8 @@ footer {
 button:disabled {
   pointer-events: none; /* Disable clicking */
 }
+
+.fullName {
+  color: pink;
+  font-weight: 700;
+}
