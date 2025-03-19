@@ -82,43 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    window.buyItem = async function buyItem(item, price) {
-        const user = auth.currentUser;
-        if (!user) {
-            alert("You must be logged in to purchase items.");
-            return;
-        }
-
-        const userId = user.uid;
-        const docRef = doc(db, "users", userId);
-        const docSnap = await getDoc(docRef);
-        const data = docSnap.data();
-
-        if (data.coins < price) {
-            alert("You don't have enough coins to buy this item.");
-            return;
-        }
-
-        // Deduct coins and update the purchase
-        const updatedCoins = data.coins - price;
-        await updateDoc(docRef, {
-            coins: updatedCoins
-        });
-
-        // Display success message
-        alert(`Successfully purchased a ${item}!`);
-        loadCoins(userId); // Refresh coin count after purchase
-    }
-
-    window.logoutUser = function logoutUser() {
-        signOut(auth).then(() => {
-            alert("You have been logged out.");
-            window.location.href = "index.html"; // Redirect to login page
-        }).catch((error) => {
-            alert("Error logging out: " + error.message);
-        });
-    };
-
     onAuthStateChanged(auth, (user) => {
         if (user) {
             loadCoins(user.uid);
