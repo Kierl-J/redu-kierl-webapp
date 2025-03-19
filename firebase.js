@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.logoutUser = function logoutUser() {
         signOut(auth).then(() => {
             alert("You have been logged out.");
-            window.location.href = "login.html"; // Redirect to login page
+            window.location.href = "index.html"; // Redirect to login page
         }).catch((error) => {
             alert("Error logging out: " + error.message);
         });

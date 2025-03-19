@@ -49,7 +49,7 @@
                     const user = userCredential.user;
                     await setDoc(doc(db, "users", user.uid), {
                         email: user.email,
-                        coins: 1000 // Starting coin balance
+                        coins: 0 // Starting coin balance
                     });
 
                     document.getElementById('statusMessage').innerText = `✅ Registered successfully with 1000 coins!`;
