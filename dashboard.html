@@ -7,60 +7,59 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <header>
+        <button class="logout-btn" onclick="logoutUser()">Logout</button>
+    </header>
 
-    <div class="main-container">
-        <!-- Header: Logout button -->
-        <div class="header">
-            <button class="logout-btn" onclick="logoutUser()">Logout</button>
+    <div class="container">
+        <h1>🎯 Quest System</h1>
+        <p class="coin-display">Coins: <span id="coinCount">0</span></p>
+        <p>Server Gcash Number: 09622673232 (Agent / Broker)</p>
+        <div id="welcomeMessage">
+            Your Gcash Number: 
         </div>
+        <br><br>
 
-        <!-- Dashboard content -->
-        <div class="container">
-            <h1>🎯 Quest System</h1>
-            <p class="coin-display">Coins: <span id="coinCount">0</span></p>
-            <p>Server Gcash Number: 09622673232 (Agent / Broker)</p>
-            <div id="welcomeMessage">
-                Your Gcash Number: 
-            </div>
+        <!-- Quest Section -->
+        <section class="quest-section">
+            <h2>Quest Here</h2>
+            <button id="visitFacebookBtn" class="quest-btn" onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
+        </section>
 
-            <!-- Quest Section -->
-            <div class="quest-section">
-                <h3>Quest Here</h3>
-                <button id="visitFacebookBtn" class="quest-btn" onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
-                <br><br>
-                <a href="gcash.html" class="quest-btn" style="background-color: #3b7a57; text-align: center;">Go to Gcash</a>
-            </div>
+        <br><br>
 
-            <!-- Shop Section -->
-            <div class="shop-section">
-                <h2>Exchange your Coin with Money</h2>
-                <div id="shop">
-                    <div class="shop-item">
-                        <p><strong>5 USD / </strong></p>
-                        <p>Price: 1,000 Coins</p>
-                        <button class="quest-btn" onclick="buyItem('5 USD', 1000)">BUY</button>
-                    </div>
-                    <div class="shop-item">
-                        <p><strong>20 USD / </strong></p>
-                        <p>Price: 50,000 Coins</p>
-                        <button class="quest-btn" onclick="buyItem('20 USD', 50000)">Buy</button>
-                    </div>
-                    <div class="shop-item">
-                        <p><strong>150 USD / </strong></p>
-                        <p>Price: 100,000 Coins</p>
-                        <button class="quest-btn" onclick="buyItem('150 USD', 100000)">Buy</button>
-                    </div>
-                    <div class="shop-item">
-                        <p><strong>300 USD / </strong></p>
-                        <p>Price: 300,000 Coins</p>
-                        <button class="quest-btn" onclick="buyItem('300 USD', 300000)">Buy</button>
-                    </div>
+        <!-- Gcash Section -->
+        <a href="gcash.html" class="quest-btn" style="background-color: #3b7a57;">Go to Gcash</a>
+        <br><br>
+
+        <!-- Shop Section -->
+        <section class="shop-section">
+            <h2>Exchange your Coin with Money</h2>
+            <div id="shop">
+                <div class="shop-item">
+                    <p><strong>5 USD / </strong></p>
+                    <p>Price: 1,000 Coins</p>
+                    <button class="quest-btn" onclick="buyItem('5 USD', 1000)">BUY</button>
+                </div>
+                <div class="shop-item">
+                    <p><strong>20 USD / </strong></p>
+                    <p>Price: 50,000 Coins</p>
+                    <button class="quest-btn" onclick="buyItem('20 USD', 50000)">BUY</button>
+                </div>
+                <div class="shop-item">
+                    <p><strong>150 USD / </strong></p>
+                    <p>Price: 100,000 Coins</p>
+                    <button class="quest-btn" onclick="buyItem('150 USD', 100000)">BUY</button>
+                </div>
+                <div class="shop-item">
+                    <p><strong>300 USD / </strong></p>
+                    <p>Price: 300,000 Coins</p>
+                    <button class="quest-btn" onclick="buyItem('300 USD', 300000)">BUY</button>
                 </div>
             </div>
-        </div>
+        </section>
     </div>
 
-    <!-- Footer -->
     <footer>
         <p>© 2025 GTrades Inc. | In partnership with <strong>Banco Santander (Spain)</strong></p>
     </footer>
@@ -68,7 +67,7 @@
     <script type="module" src="firebase.js"></script>
 
     <script type="module">
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
         import { getFirestore, doc, updateDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
         import { getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
