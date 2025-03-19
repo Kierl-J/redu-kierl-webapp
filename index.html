@@ -26,10 +26,20 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
-        const firebaseConfig = { /* Add your Firebase Config here */ };
+        const firebaseConfig = {
+            apiKey: "AIzaSyAz_xAszHY5r1OLDSM8PrCMZG_vFlUuJEg",
+            authDomain: "redu-kierl.firebaseapp.com",
+            projectId: "redu-kierl",
+            storageBucket: "redu-kierl.appspot.com",  /* Fixed */
+            messagingSenderId: "858929548345",
+            appId: "1:858929548345:web:5be516413be06d9a7e11e8",
+            measurementId: "G-YRN2FT696V"
+        };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
+        // ✅ Correctly defined `loginUser`
         window.loginUser = function loginUser() {
             const email = document.getElementById('authEmail').value;
             const password = document.getElementById('authPassword').value;
