@@ -49,11 +49,12 @@
                     const user = userCredential.user;
                     await setDoc(doc(db, "users", user.uid), {
                         email: user.email,
-                        coins: 0 // Starting coin balance
+                        coins: 0, // Starting coin balance
+                        gcashNumber: "" // Default empty Gcash number
                     });
 
-                    document.getElementById('statusMessage').innerText = `✅ Registered successfully with 1000 coins!`;
-                    window.location.href = "dashboard.html";
+                    document.getElementById('statusMessage').innerText = `✅ Registered successfully!`;
+                    window.location.href = "dashboard.html"; // Redirect to dashboard
                 })
                 .catch((error) => {
                     document.getElementById('statusMessage').innerText = `❌ Error: ${error.message}`;
