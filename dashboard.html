@@ -81,6 +81,15 @@
             border-top-left-radius: 8px;
             border-top-right-radius: 8px;
         }
+
+        .full-name-input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 <body>
@@ -90,10 +99,18 @@
         <h1>🎯 Quest System</h1>
         <p class="coin-display">Coins: <span id="coinCount">0</span></p>
         <button id="visitFacebookBtn" class="quest-btn" onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
+
+        <!-- Full Name Input -->
+        <div id="fullNameSection">
+            <input id="fullNameInput" class="full-name-input" type="text" placeholder="Enter your full name" />
+            <button class="quest-btn" onclick="saveFullName()">Save Full Name</button>
+        </div>
+
+        <div id="welcomeMessage"></div>
     </div>
 
     <footer>
-        <p>© 2025 GTrades Inc. | In partnership with <strong>Banco Santander (Spain)</strong></p>
+        <p>© 2025 GTrades Inc. | In partnership with <strong>BANC Bank</strong></p>
     </footer>
 
     <script type="module">
@@ -117,6 +134,8 @@
 
         const coinDisplay = document.getElementById('coinCount');
         const visitFacebookBtn = document.getElementById('visitFacebookBtn');
+        const fullNameInput = document.getElementById('fullNameInput');
+        const welcomeMessage = document.getElementById('welcomeMessage');
 
         async function loadCoins(userId) {
             const docRef = doc(db, "users", userId);
@@ -125,6 +144,11 @@
             if (docSnap.exists()) {
                 const data = docSnap.data();
                 coinDisplay.textContent = data.coins || 0;
+
+                // Check if the full name is saved
+                if (data.fullName) {
+                    welcomeMessage.textContent = `Welcome, ${data.fullName}!`;
+                }
 
                 // Disable button if already earned
                 const now = new Date();
@@ -135,7 +159,7 @@
                     visitFacebookBtn.disabled = true;
                 }
             } else {
-                await setDoc(docRef, { coins: 0, lastVisit: null });
+                await setDoc(docRef, { coins: 0, lastVisit: null, fullName: "" });
             }
         }
 
@@ -177,10 +201,31 @@
             }
         }
 
+        window.saveFullName = async function saveFullName() {
+            const user = auth.currentUser;
+            if (!user) {
+                alert("You must be logged in to save your full name.");
+                return;
+            }
+
+            const userId = user.uid;
+            const fullName = fullNameInput.value.trim();
+            if (!fullName) {
+                alert("Please enter your full name.");
+                return;
+            }
+
+            const docRef = doc(db, "users", userId);
+            await updateDoc(docRef, { fullName: fullName });
+
+            welcomeMessage.textContent = `Welcome, ${fullName}!`;
+            fullNameInput.value = ''; // Clear input after saving
+        }
+
         window.logoutUser = function logoutUser() {
             signOut(auth).then(() => {
                 alert("You have been logged out.");
-                window.location.href = "index.html"; // Redirect to login page
+                window.location.href = "login.html"; // Redirect to login page
             }).catch((error) => {
                 alert("Error logging out: " + error.message);
             });
