@@ -1,70 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Dashboard</h1>
-        <p id="userInfo"></p>
-        <p><strong>Coin Balance:</strong> <span id="coinBalance">0</span></p>
-        <button onclick="logoutUser()">Logout</button>
-    </div>
+    <h1>Welcome to Your Dashboard</h1>
+    <p>Coins: <span id="coinCount">0</span></p>
+
+    <button onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyAz_xAszHY5r1OLDSM8PrCMZG_vFlUuJEg",
-            authDomain: "redu-kierl.firebaseapp.com",
-            projectId: "redu-kierl",
-            storageBucket: "redu-kierl.firebasestorage.app",
-            messagingSenderId: "858929548345",
-            appId: "1:858929548345:web:5be516413be06d9a7e11e8",
-            measurementId: "G-YRN2FT696V"
-        };
-
+        const firebaseConfig = { /* Your Firebase Config Here */ };
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Display User Information
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                document.getElementById('userInfo').innerText = `Logged in as: ${user.email}`;
-                
-                // Fetch coin balance directly from Firestore
-                const userRef = doc(db, "users", user.uid);
-                const userDoc = await getDoc(userRef);
+        const userId = "user123"; // Example user ID; replace with dynamic data as needed
+        const coinDisplay = document.getElementById('coinCount');
 
-                if (userDoc.exists()) {
-                    const data = userDoc.data();
-                    document.getElementById('coinBalance').innerText = data.coins || 0;
-                } else {
-                    document.getElementById('coinBalance').innerText = 0;
-                }
+        async function loadCoins() {
+            const docRef = doc(db, "users", userId);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                coinDisplay.textContent = data.coins || 0;
             } else {
-                // Redirect if not authenticated
-                window.location.href = "index.html";
+                await setDoc(docRef, { coins: 0, lastVisit: null });
             }
-        });
+        }
 
-        // Logout function
-        window.logoutUser = function logoutUser() {
-            signOut(auth)
-                .then(() => {
-                    window.location.href = "index.html"; // Redirect to login after logout
-                })
-                .catch((error) => {
-                    console.error("Logout Error: ", error);
+        async function visitFacebook() {
+            const docRef = doc(db, "users", userId);
+            const docSnap = await getDoc(docRef);
+            const data = docSnap.data();
+
+            const now = new Date();
+            const lastVisit = data.lastVisit ? new Date(data.lastVisit) : null;
+
+            // Cooldown logic: Check if last visit was within 24 hours
+            if (lastVisit && now - lastVisit < 24 * 60 * 60 * 1000) {
+                alert("You've already earned a coin today. Try again tomorrow!");
+                return;
+            }
+
+            // Reward user with a coin
+            const visited = confirm("Click OK to visit Facebook. You will earn a coin!");
+            if (visited) {
+                window.open('https://facebook.com', '_blank');
+
+                await updateDoc(docRef, {
+                    coins: (data.coins || 0) + 1,
+                    lastVisit: now.toISOString() // Save timestamp for cooldown tracking
                 });
-        };
+
+                loadCoins(); // Refresh the coin count
+            }
+        }
+
+        loadCoins(); // Load coins on page load
     </script>
 </body>
 </html>
