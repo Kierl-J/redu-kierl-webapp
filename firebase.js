@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (data.gcashNumber && welcomeMessage) {
-                welcomeMessage.textContent = `Welcome, Gcash Number: ${data.gcashNumber}!`;
+                welcomeMessage.textContent = `Gcash Number: ${data.gcashNumber}`;
             }
 
             // Disable button if already earned
