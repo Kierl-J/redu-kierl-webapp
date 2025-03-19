@@ -13,7 +13,11 @@
             margin: 0;
             padding: 0;
             color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
+
         .container {
             width: 90%;
             max-width: 1200px;
@@ -22,14 +26,18 @@
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            flex: 1; /* Ensures the container grows to fill space between header and footer */
         }
+
         h1, h2 {
             color: #4CAF50;
         }
+
         .coin-display {
             font-size: 1.2em;
             margin-bottom: 20px;
         }
+
         .logout-btn {
             background-color: #f44336;
             color: white;
@@ -37,27 +45,54 @@
             border: none;
             cursor: pointer;
             border-radius: 5px;
-            position: absolute;
+            position: fixed;
             top: 20px;
             right: 20px;
+            z-index: 10; /* Ensure the button stays above other elements */
         }
+
         .quest-btn {
             background-color: #4CAF50;
             color: white;
-            padding: 10px 20px;
+            padding: 15px 25px;
             border: none;
             cursor: pointer;
             border-radius: 5px;
             margin: 10px 0;
+            font-size: 1.1em;
+            text-align: center;
         }
+
         .quest-btn:hover {
             background-color: #45a049;
         }
+
+        #questSection {
+            background-color: #e8f5e9;
+            padding: 30px;
+            margin-top: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #questSection h2 {
+            color: #388e3c;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        #questSection p {
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
         #shop {
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
         }
+
         .shop-item {
             background-color: #f9f9f9;
             padding: 20px;
@@ -66,17 +101,18 @@
             width: 250px;
             text-align: center;
         }
+
         .shop-item p {
             margin: 10px 0;
         }
+
         footer {
             text-align: center;
             padding: 15px;
             background-color: #333;
             color: white;
-            position: fixed;
             width: 100%;
-            bottom: 0;
+            margin-top: auto; /* Ensures the footer sticks at the bottom */
         }
     </style>
 </head>
@@ -91,11 +127,16 @@
             Your Gcash Number: 
         </div>
 
-        <p>Quest Here</p>
-        <button id="visitFacebookBtn" class="quest-btn" onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
-        <br><br>
+        <!-- Quest Section: Make it more visible and organized -->
+        <div id="questSection">
+            <h2>Quest Here</h2>
+            <p>Complete the following tasks to earn coins:</p>
+            <button id="visitFacebookBtn" class="quest-btn" onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
+            <br><br>
 
-        <a href="gcash.html" class="quest-btn" style="background-color: #3b7a57;">Go to Gcash</a>
+            <a href="gcash.html" class="quest-btn" style="background-color: #3b7a57;">Go to Gcash</a>
+        </div>
+        
         <br><br>
 
         <!-- Shop Section -->
