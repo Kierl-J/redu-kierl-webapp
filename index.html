@@ -30,7 +30,7 @@
             apiKey: "AIzaSyAz_xAszHY5r1OLDSM8PrCMZG_vFlUuJEg",
             authDomain: "redu-kierl.firebaseapp.com",
             projectId: "redu-kierl",
-            storageBucket: "redu-kierl.appspot.com",  /* Fixed */
+            storageBucket: "redu-kierl.firebasestorage.app",
             messagingSenderId: "858929548345",
             appId: "1:858929548345:web:5be516413be06d9a7e11e8",
             measurementId: "G-YRN2FT696V"
@@ -39,20 +39,19 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // ✅ Correctly defined `loginUser`
         window.loginUser = function loginUser() {
             const email = document.getElementById('authEmail').value;
             const password = document.getElementById('authPassword').value;
 
             signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    document.getElementById('statusMessage').innerText = `✅ Logged in as: ${userCredential.user.email}`;
+                .then(() => {
+                    document.getElementById('statusMessage').innerText = `✅ Logged in successfully!`;
                     window.location.href = "dashboard.html";
                 })
                 .catch((error) => {
                     document.getElementById('statusMessage').innerText = `❌ Error: ${error.message}`;
                 });
-        }
+        };
     </script>
 </body>
 </html>

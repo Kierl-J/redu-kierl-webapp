@@ -16,11 +16,12 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-        import { getAuth, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } 
-            from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
+        // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyAz_xAszHY5",
+            apiKey: "AIzaSyAz_xAszHY5r1OLDSM8PrCMZG_vFlUuJEg",
             authDomain: "redu-kierl.firebaseapp.com",
             projectId: "redu-kierl",
             storageBucket: "redu-kierl.firebasestorage.app",
@@ -31,38 +32,34 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        // Enable session persistence
-        setPersistence(auth, browserLocalPersistence).catch(console.error);
-
-        // Authentication and Coin Balance Display
+        // Display User Information
         onAuthStateChanged(auth, async (user) => {
-            console.log("Auth State Changed:", user);  // Debugging log
-
             if (user) {
                 document.getElementById('userInfo').innerText = `Logged in as: ${user.email}`;
+                
+                // Fetch coin balance directly from Firestore
+                const userRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userRef);
 
-                try {
-                    const response = await fetch(`/api/getCoins?email=${encodeURIComponent(user.email)}`);
-                    const data = await response.json();
-                    console.log("Fetched Data:", data);  // Debugging log
-
+                if (userDoc.exists()) {
+                    const data = userDoc.data();
                     document.getElementById('coinBalance').innerText = data.coins || 0;
-                } catch (error) {
-                    console.error("Failed to load coin data:", error);
-                    document.getElementById('coinBalance').innerText = "Error loading coins";
+                } else {
+                    document.getElementById('coinBalance').innerText = 0;
                 }
             } else {
-                console.log("User not authenticated.");  // Debugging log
+                // Redirect if not authenticated
                 window.location.href = "index.html";
             }
         });
 
-        // Logout Function
+        // Logout function
         window.logoutUser = function logoutUser() {
             signOut(auth)
                 .then(() => {
-                    window.location.href = "index.html";
+                    window.location.href = "index.html"; // Redirect to login after logout
                 })
                 .catch((error) => {
                     console.error("Logout Error: ", error);

@@ -16,7 +16,7 @@
             <label for="regPassword">Password:</label>
             <input type="password" id="regPassword" required>
             <br>
-            <button type="button" id="registerButton">Register</button>
+            <button type="button" onclick="registerUser()">Register</button>
         </form>
         <p id="statusMessage"></p>
     </div>
@@ -24,8 +24,8 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-        // Firebase Configuration (Your config added here)
         const firebaseConfig = {
             apiKey: "AIzaSyAz_xAszHY5r1OLDSM8PrCMZG_vFlUuJEg",
             authDomain: "redu-kierl.firebaseapp.com",
@@ -38,18 +38,18 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app);
 
-        // Register Button Click Handler
-        document.getElementById('registerButton').addEventListener('click', async () => {
+        window.registerUser = function registerUser() {
             const email = document.getElementById('regEmail').value;
             const password = document.getElementById('regPassword').value;
 
             createUserWithEmailAndPassword(auth, email, password)
                 .then(async (userCredential) => {
-                    await fetch('/api/updateCoins', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email: userCredential.user.email, coins: 1000 })
+                    const user = userCredential.user;
+                    await setDoc(doc(db, "users", user.uid), {
+                        email: user.email,
+                        coins: 1000 // Starting coin balance
                     });
 
                     document.getElementById('statusMessage').innerText = `✅ Registered successfully with 1000 coins!`;
@@ -58,7 +58,7 @@
                 .catch((error) => {
                     document.getElementById('statusMessage').innerText = `❌ Error: ${error.message}`;
                 });
-        });
+        };
     </script>
 </body>
 </html>
