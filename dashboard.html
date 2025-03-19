@@ -65,9 +65,8 @@
     <script type="module" src="firebase.js"></script>
 
     <script type="module">
-        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-        import { getFirestore, doc, updateDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-        import { getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getFirestore, doc, updateDoc, collection, addDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const auth = getAuth();
         const db = getFirestore();
@@ -202,15 +201,13 @@
         };
 
         // On page load, load user data
-        window.onload = function() {
-            const user = auth.currentUser;
+        onAuthStateChanged(auth, function(user) {
             if (user) {
                 loadUserData(user.uid);
             } else {
                 window.location.href = "index.html"; // Redirect to login page if not logged in
             }
-        };
-
+        });
     </script>
 </body>
 </html>
