@@ -101,7 +101,7 @@ button:disabled {
   pointer-events: none; /* Disable clicking */
 }
 
-.fullName {
+#fullName {
   color: pink;
   font-weight: 700;
 }
