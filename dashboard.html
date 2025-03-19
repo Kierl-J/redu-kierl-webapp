@@ -48,21 +48,18 @@
             </div>
             <!-- Add more items here as needed -->
         </div>
-
-        <!-- Transaction History Section -->
-        <h2>Transaction History</h2>
-        <ul id="transactionList"></ul>
     </div>
 
     <footer>
         <p>© 2025 GTrades Inc. | In partnership with <strong>Banco Santander (Spain)</strong></p>
     </footer>
 
+    <!-- Firebase SDK Imports -->
     <script type="module" src="firebase.js"></script>
 
     <script type="module">
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
-        import { getFirestore, doc, updateDoc, setDoc, collection, addDoc, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";  <!-- Import the missing onAuthStateChanged -->
+        import { getFirestore, doc, updateDoc, setDoc, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
         import { getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
         const auth = getAuth();
@@ -89,7 +86,7 @@
                     await updateDoc(docRef, { coins: coins - price });
 
                     // Log the purchase in a separate collection for transactions
-                    const transactionRef = await addDoc(collection(db, "transactions"), {
+                    await addDoc(collection(db, "transactions"), {
                         userId: userId,
                         item: item,
                         price: price,
@@ -100,7 +97,6 @@
 
                     // Reload or update coin display
                     loadCoins(userId);
-                    loadTransactions(userId); // Reload transaction history
                 } else {
                     alert("You don't have enough coins for this purchase.");
                 }
@@ -123,42 +119,13 @@
             }
         }
 
-        // Function to fetch and display transactions
-        async function loadTransactions(userId) {
-            const transactionsRef = collection(db, "transactions");
-            const q = query(transactionsRef, where("userId", "==", userId), orderBy("timestamp", "desc"));
-            const querySnapshot = await getDocs(q);
-            
-            const transactionList = document.getElementById('transactionList');
-            transactionList.innerHTML = ''; // Clear existing list
-
-            querySnapshot.forEach((doc) => {
-                const transaction = doc.data();
-                const listItem = document.createElement('li');
-                listItem.textContent = `${transaction.item} - ${transaction.price} Coins on ${new Date(transaction.timestamp.seconds * 1000).toLocaleString()}`;
-                transactionList.appendChild(listItem);
-            });
-        }
-
-        // Logout function
-        window.logoutUser = function logoutUser() {
-            signOut(auth).then(() => {
-                alert("You have been logged out.");
-                window.location.href = "index.html"; // Redirect to login page
-            }).catch((error) => {
-                alert("Error logging out: " + error.message);
-            });
-        };
-
-        // Ensure transaction history is loaded when user is authenticated
+        // Check if user is authenticated
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 loadCoins(user.uid);
-                loadTransactions(user.uid); // Load transaction history
             } else {
-                if (coinDisplay) {
-                    coinDisplay.textContent = "0";
-                }
+                alert("You are not logged in.");
+                window.location.href = "login.html";  // Redirect to login if user is not authenticated
             }
         });
     </script>
