@@ -8,15 +8,80 @@
 </head>
 <body>
     <div class="container">
-        <h1>Gcash Number</h1>
-        <input id="gcashNumberInput" class="gcash-number-input" type="text" placeholder="Enter your Gcash Number" />
+        <h1>Enter Your Gcash Number</h1>
+        <input id="gcashNumberInput" class="gcash-number-input" type="text" placeholder="Enter your Gcash Number" required />
         <button class="quest-btn" onclick="saveGcashNumber()">Save Gcash Number</button>
+        <p id="statusMessage"></p> <!-- Feedback message -->
     </div>
 
     <footer>
         <p>© 2025 GTrades Inc. | In partnership with <strong>BANC Bank</strong></p>
     </footer>
 
-    <script type="module" src="firebase.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+        import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAz_xAszHY5r1OLDSM8PrCMZG_vFlUuJEg",
+            authDomain: "redu-kierl.firebaseapp.com",
+            projectId: "redu-kierl",
+            storageBucket: "redu-kierl.firebasestorage.app",
+            messagingSenderId: "858929548345",
+            appId: "1:858929548345:web:5be516413be06d9a7e11e8",
+            measurementId: "G-YRN2FT696V"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        window.saveGcashNumber = async function saveGcashNumber() {
+            const user = auth.currentUser;
+            const gcashNumber = document.getElementById('gcashNumberInput').value.trim();
+            const statusMessage = document.getElementById('statusMessage');
+
+            // Check if the user is logged in
+            if (!user) {
+                statusMessage.innerText = "❌ You must be logged in to save your Gcash Number.";
+                return;
+            }
+
+            // Validate input
+            if (!gcashNumber) {
+                statusMessage.innerText = "❌ Please enter a valid Gcash Number.";
+                return;
+            }
+
+            const userId = user.uid;
+            const docRef = doc(db, "users", userId);
+
+            try {
+                // Update the user's Gcash Number in Firestore
+                await updateDoc(docRef, { gcashNumber: gcashNumber });
+
+                // Provide feedback
+                statusMessage.innerText = "✅ Gcash Number saved successfully!";
+
+                // Clear the input field
+                document.getElementById('gcashNumberInput').value = '';
+
+                // Optionally, redirect after saving
+                setTimeout(() => {
+                    window.location.href = "dashboard.html"; // Redirect to dashboard
+                }, 2000); // Delay for 2 seconds
+            } catch (error) {
+                statusMessage.innerText = `❌ Error: ${error.message}`;
+            }
+        };
+
+        // Check if the user is logged in
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = "login.html"; // Redirect to login page if not logged in
+            }
+        });
+    </script>
 </body>
 </html>
