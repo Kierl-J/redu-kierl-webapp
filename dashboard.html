@@ -57,11 +57,6 @@
             background-color: #45a049;
         }
 
-        .quest-btn.disabled {
-            background-color: #a0a0a0;
-            cursor: not-allowed;
-        }
-
         .logout-btn {
             position: absolute;
             top: 20px;
@@ -89,59 +84,6 @@
             border-top-right-radius: 8px;
         }
 
-        /* Tabs Styles */
-        .tabs {
-            display: flex;
-            justify-content: space-evenly;
-            margin-bottom: 20px;
-        }
-
-        .tab-btn {
-            background-color: #ddd;
-            color: #333;
-            border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 6px;
-            width: 50%;
-        }
-
-        .tab-btn.active {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-            margin-top: 20px;
-        }
-
-        .gcash-number-container {
-            text-align: left;
-            width: 100%;
-            display: flex;
-            justify-content: flex-start;
-            gap: 10px;
-        }
-
-        .gcash-number-input {
-            width: 200px;
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-        }
-
-        .gcash-number-container button {
-            margin-top: 0;
-            height: 100%;
-        }
     </style>
 </head>
 <body>
@@ -151,26 +93,11 @@
         <h1>🎯 Quest System</h1>
         <p class="coin-display">Coins: <span id="coinCount">0</span></p>
         <div id="welcomeMessage"></div>
+        
+        <button id="visitFacebookBtn" class="quest-btn" onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
 
-        <!-- Tabs Section -->
-        <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('questTab')">Quest</button>
-            <button class="tab-btn" onclick="showTab('gcashTab')">Gcash</button>
-        </div>
-
-        <!-- Tab Contents -->
-        <div class="tab-content active" id="questTab">
-            <p>Welcome to the quest tab!</p>
-            <button id="visitFacebookBtn" class="quest-btn" onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
-        </div>
-
-        <div class="tab-content" id="gcashTab">
-            <p>Enter your Gcash number below:</p>
-            <div class="gcash-number-container">
-                <input id="gcashNumberInput" class="gcash-number-input" type="text" placeholder="Enter your Gcash Number" />
-                <button class="quest-btn" onclick="saveGcashNumber()">Save Gcash Number</button>
-            </div>
-        </div>
+        <!-- Link to Gcash page -->
+        <a href="gcash.html" class="quest-btn" style="background-color: #3b7a57;">Go to Gcash</a>
     </div>
 
     <footer>
@@ -198,7 +125,6 @@
 
         const coinDisplay = document.getElementById('coinCount');
         const visitFacebookBtn = document.getElementById('visitFacebookBtn');
-        const gcashNumberInput = document.getElementById('gcashNumberInput');
         const welcomeMessage = document.getElementById('welcomeMessage');
 
         async function loadCoins(userId) {
@@ -265,27 +191,6 @@
             }
         }
 
-        window.saveGcashNumber = async function saveGcashNumber() {
-            const user = auth.currentUser;
-            if (!user) {
-                alert("You must be logged in to save your Gcash Number.");
-                return;
-            }
-
-            const userId = user.uid;
-            const gcashNumber = gcashNumberInput.value.trim();
-            if (!gcashNumber) {
-                alert("Please enter your Gcash Number.");
-                return;
-            }
-
-            const docRef = doc(db, "users", userId);
-            await updateDoc(docRef, { gcashNumber: gcashNumber });
-
-            welcomeMessage.textContent = `Welcome, Gcash Number: ${gcashNumber}!`;
-            gcashNumberInput.value = ''; // Clear input after saving
-        }
-
         window.logoutUser = function logoutUser() {
             signOut(auth).then(() => {
                 alert("You have been logged out.");
@@ -293,17 +198,6 @@
             }).catch((error) => {
                 alert("Logout failed, please try again.");
             });
-        }
-
-        function showTab(tabId) {
-            const tabs = document.querySelectorAll('.tab-content');
-            const buttons = document.querySelectorAll('.tab-btn');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            buttons.forEach(button => button.classList.remove('active'));
-
-            document.getElementById(tabId).classList.add('active');
-            const activeButton = Array.from(buttons).find(button => button.textContent.toLowerCase() === tabId.replace('Tab', '').toUpperCase());
-            activeButton.classList.add('active');
         }
 
         onAuthStateChanged(auth, (user) => {
