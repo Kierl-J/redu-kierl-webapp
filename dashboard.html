@@ -36,7 +36,7 @@
             margin: 10px 0;
         }
 
-        button {
+        .quest-btn {
             background-color: #4CAF50;
             color: #fff;
             border: none;
@@ -47,8 +47,13 @@
             margin-top: 15px;
         }
 
-        button:hover {
+        .quest-btn:hover {
             background-color: #45a049;
+        }
+
+        .quest-btn.disabled {
+            background-color: #a0a0a0;
+            cursor: not-allowed;
         }
 
         .logout-btn {
@@ -84,7 +89,7 @@
     <div class="container">
         <h1>🎯 Quest System</h1>
         <p class="coin-display">Coins: <span id="coinCount">0</span></p>
-        <button onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
+        <button id="visitFacebookBtn" class="quest-btn" onclick="visitFacebook()">Visit Facebook and Earn Coins</button>
     </div>
 
     <footer>
@@ -111,6 +116,7 @@
         const auth = getAuth(app);
 
         const coinDisplay = document.getElementById('coinCount');
+        const visitFacebookBtn = document.getElementById('visitFacebookBtn');
 
         async function loadCoins(userId) {
             const docRef = doc(db, "users", userId);
@@ -119,6 +125,15 @@
             if (docSnap.exists()) {
                 const data = docSnap.data();
                 coinDisplay.textContent = data.coins || 0;
+
+                // Disable button if already earned
+                const now = new Date();
+                const lastVisit = data.lastVisit ? new Date(data.lastVisit) : null;
+
+                if (lastVisit && now - lastVisit < 24 * 60 * 60 * 1000) {
+                    visitFacebookBtn.classList.add('disabled');
+                    visitFacebookBtn.disabled = true;
+                }
             } else {
                 await setDoc(docRef, { coins: 0, lastVisit: null });
             }
@@ -141,6 +156,8 @@
 
             if (lastVisit && now - lastVisit < 24 * 60 * 60 * 1000) {
                 alert("You've already earned a coin today. Try again tomorrow!");
+                visitFacebookBtn.classList.add('disabled');
+                visitFacebookBtn.disabled = true;
                 return;
             }
 
@@ -152,6 +169,9 @@
                     coins: (data.coins || 0) + 1,
                     lastVisit: now.toISOString()
                 });
+
+                visitFacebookBtn.classList.add('disabled');
+                visitFacebookBtn.disabled = true;
 
                 loadCoins(userId); // Refresh coin count
             }
